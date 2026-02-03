@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Calculadora de Propinas</title>
+  <style>
+    body {
+      background: #18181a;
+      color: #ececec;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .tip-container {
+      background: #23232b;
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.45);
+      width: 320px;
+      text-align: center;
+    }
+    .tip-container h1 {
+      margin-top: 0;
+      letter-spacing: 0.5px;
+      font-size: 1.6rem;
+      margin-bottom: 1.2rem;
+      color: #78ffd6;
+      font-weight: 600;
+    }
+    input[type="number"] {
+      padding: 0.6rem 0.9rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: #18181a;
+      color: #ececec;
+      margin-bottom: 1.5rem;
+      width: 80%;
+      box-sizing: border-box;
+      outline: none;
+      transition: border 0.2s;
+      border: 1.5px solid #23232b;
+    }
+    input[type="number"]:focus {
+      border: 1.5px solid #78ffd6;
+    }
+    .percentages {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 1.7rem;
+    }
+    .percent-btn {
+      background: #282a36;
+      color: #78ffd6;
+      border: none;
+      border-radius: 7px;
+      padding: 0.55rem 1.1rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .percent-btn.selected, .percent-btn:hover {
+      background: #78ffd6;
+      color: #18181a;
+    }
+    .result {
+      background: #181821;
+      border-radius: 8px;
+      padding: 1.15rem 0.7rem;
+      margin-top: 1.1rem;
+      color: #ececec;
+      font-size: 1.18rem;
+      min-height: 3rem;
+      box-shadow: 0 2px 6px 0 rgba(0,0,0,0.13);
+      font-weight: 500;
+    }
+    label {
+      font-size: 1.05rem;
+      color: #b4bac3;
+      margin-bottom: 0.4rem;
+      display: inline-block;
+      letter-spacing: 0.2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tip-container">
+    <h1>Calculadora de Propinas</h1>
+    <label for="amount">Monto de la cuenta</label><br>
+    <input type="number" id="amount" min="0" placeholder="Ingresa el monto" step="0.01"><br>
+    <label for="people">Dividir entre (personas)</label><br>
+    <input type="number" id="people" min="1" value="1" placeholder="1" step="1"><br>
+    <div class="percentages">
+      <button class="percent-btn" data-percent="10">10%</button>
+      <button class="percent-btn" data-percent="15">15%</button>
+      <button class="percent-btn" data-percent="20">20%</button>
+    </div>
+    <div class="result" id="result">Selecciona un porcentaje para calcular la propina.</div>
+  </div>
+  <script>
+    const amountInput = document.getElementById('amount');
+    const peopleInput = document.getElementById('people');
+    const percentBtns = document.querySelectorAll('.percent-btn');
+    const resultDiv = document.getElementById('result');
+    let selectedPercent = null;
+
+    function formatCurrency(n) {
+      return '$' + Number(n).toLocaleString('es-AR', {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      });
+    }
+
+    function calculate() {
+      const amount = parseFloat(amountInput.value);
+      let people = parseInt(peopleInput.value, 10);
+      if (isNaN(people) || people < 1) people = 1;
+      peopleInput.value = people;
+
+      if (!selectedPercent || isNaN(amount) || amount <= 0) {
+        resultDiv.textContent = 'Selecciona un porcentaje para calcular la propina.';
+        return;
+      }
+      const tip = amount * selectedPercent / 100;
+      const total = amount + tip;
+      let html =
+        `Propina (${selectedPercent}%): <b>${formatCurrency(tip)}</b><br>
+         Total: <b>${formatCurrency(total)}</b>`;
+      if (people > 1) {
+        const totalPerPerson = total / people;
+        const tipPerPerson = tip / people;
+        html += `<br><br>Por persona (${people}):<br>
+         Propina: <b>${formatCurrency(tipPerPerson)}</b><br>
+         Total: <b>${formatCurrency(totalPerPerson)}</b>`;
+      }
+      resultDiv.innerHTML = html;
+    }
+
+    percentBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        percentBtns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedPercent = parseFloat(btn.dataset.percent);
+        calculate();
+      });
+    });
+
+    amountInput.addEventListener('input', calculate);
+    peopleInput.addEventListener('input', calculate);
+  </script>
+</body>
+</html>
