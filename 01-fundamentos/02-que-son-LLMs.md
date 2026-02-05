@@ -1,4 +1,4 @@
-# Large Language Models (LLM): conceptos base y avanzados
+# Large Language Models (LLM): conceptos bases
 
 Esta guía está diseñada para quienes buscan **entender cómo funcionan los Large Language Models (LLM)** y cómo utilizarlos de forma profesional, más allá del uso superficial de prompts.
 
